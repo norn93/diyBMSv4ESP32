@@ -91,6 +91,19 @@ void HAL_ESP32::SetOutputState(uint8_t outputId, RelayState state)
     //P6 = RELAY3_SSR (outputId=2)
     //P7 = EXT_IO_E (outputId=3)
 
+    if (outputId == 0) {
+        ESP_LOGD(TAG, "Trying to set relay 1 to state %u", state);
+        if (state == RelayState::RELAY_ON) {
+            ESP_LOGD(TAG, "Writing HIGH");
+            digitalWrite(RELAY_CUSTOM_1, HIGH);
+        } else {
+            ESP_LOGD(TAG, "Writing LOW");
+            digitalWrite(RELAY_CUSTOM_1, LOW);
+        }
+    }
+
+    return;
+
     if (outputId <= 3)
     {
         TCA6408_Value = readByte(I2C_NUM_0, TCA6408_ADDRESS, TCA6408_INPUT);
@@ -217,6 +230,9 @@ void HAL_ESP32::ConfigurePins(void (*WiFiPasswordResetInterrupt)(void))
     pinMode(RS485_ENABLE, OUTPUT);
     //Enable receive
     digitalWrite(RS485_ENABLE, LOW);
+
+    // Set up my custom relay controls
+    pinMode(RELAY_CUSTOM_1, OUTPUT);
 }
 
 void HAL_ESP32::SwapGPIO0ToOutput()

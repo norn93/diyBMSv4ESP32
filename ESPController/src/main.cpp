@@ -158,7 +158,7 @@ AsyncMqttClient mqttClient;
 
 void LED(uint8_t bits)
 {
-  hal.Led(bits);
+  //hal.Led(bits);
 }
 
 // When triggered, the VOLTAGE and STATUS in the CellModuleInfo structure are accurate and consistant at this point in time.
@@ -170,7 +170,11 @@ void voltageandstatussnapshot_task(void *param)
     // Wait until this task is triggered, when
     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
+<<<<<<< HEAD
+    ESP_LOGD(TAG, "Snap");
+=======
     // ESP_LOGD(TAG, "Snap");
+>>>>>>> 8b166ac4e93aa867cb3a07395ecddf2f87406948
 
     if (_tft_screen_available)
     {
@@ -938,19 +942,33 @@ void SetControllerState(ControllerState newState)
     switch (_controller_state)
     {
     case ControllerState::PowerUp:
+<<<<<<< HEAD
+      //Purple during start up, don't use the LED as thats not setup at this state
+      //hal.Led(RGBLED::Purple);
+      break;
+    case ControllerState::ConfigurationSoftAP:
+      //Don't use the LED as thats not setup at this state
+      //hal.Led(RGBLED::White);
+=======
       // Purple during start up, don't use the LED as thats not setup at this state
       hal.Led(RGBLED::Purple);
       break;
     case ControllerState::ConfigurationSoftAP:
       // Don't use the LED as thats not setup at this state
       hal.Led(RGBLED::White);
+>>>>>>> 8b166ac4e93aa867cb3a07395ecddf2f87406948
       break;
     case ControllerState::Stabilizing:
-      LED(RGBLED::Yellow);
+      //LED(RGBLED::Yellow);
       break;
     case ControllerState::Running:
+<<<<<<< HEAD
+      //LED(RGBLED::Green);
+      //Fire task to switch off BOOT button after 30 seconds
+=======
       LED(RGBLED::Green);
       // Fire task to switch off BOOT button after 30 seconds
+>>>>>>> 8b166ac4e93aa867cb3a07395ecddf2f87406948
       xTaskNotify(wifiresetdisable_task_handle, 0x00, eNotifyAction::eNoAction);
       break;
     case ControllerState::Unknown:
@@ -1230,10 +1248,17 @@ void pulse_relay_off_task(void *param)
     {
       if (previousRelayPulse[y])
       {
+<<<<<<< HEAD
+        //We now need to rapidly turn off the relay after a fixed period of time (pulse mode)
+        //However we leave the relay and previousRelayState looking like the relay has triggered (it has!)
+        //to prevent multiple pulses being sent on each rule refresh
+        //SetOutputState(y, previousRelayState[y] == RelayState::RELAY_ON ? RelayState::RELAY_OFF : RelayState::RELAY_ON);
+=======
         // We now need to rapidly turn off the relay after a fixed period of time (pulse mode)
         // However we leave the relay and previousRelayState looking like the relay has triggered (it has!)
         // to prevent multiple pulses being sent on each rule refresh
         hal.SetOutputState(y, previousRelayState[y] == RelayState::RELAY_ON ? RelayState::RELAY_OFF : RelayState::RELAY_ON);
+>>>>>>> 8b166ac4e93aa867cb3a07395ecddf2f87406948
 
         previousRelayPulse[y] = false;
       }
@@ -3290,15 +3315,21 @@ void setup()
   ESP_LOGI(TAG, "ESP32 Chip model = %u, Rev %u, Cores=%u, Features=%u", chip_info.model, chip_info.revision, chip_info.cores, chip_info.features);
 
   hal.ConfigurePins(WifiPasswordClear);
-  hal.ConfigureI2C(TCA6408Interrupt, TCA9534AInterrupt);
+  //hal.ConfigureI2C(TCA6408Interrupt, TCA9534AInterrupt);
   hal.ConfigureVSPI();
 
   _avrsettings.inProgress = false;
   _avrsettings.programmingModeEnabled = false;
 
+<<<<<<< HEAD
+  //See if we can get a sensible reading from the TFT touch chip XPT2046
+  //if we can, then a screen is fitted, so enable it
+  _tft_screen_available = false; //hal.IsScreenAttached();
+=======
   // See if we can get a sensible reading from the TFT touch chip XPT2046
   // if we can, then a screen is fitted, so enable it
   _tft_screen_available = hal.IsScreenAttached();
+>>>>>>> 8b166ac4e93aa867cb3a07395ecddf2f87406948
 
   if (_tft_screen_available)
   {
@@ -3314,13 +3345,13 @@ void setup()
 
   SetControllerState(ControllerState::PowerUp);
 
-  hal.Led(0);
+  //hal.Led(0);
 
   if (!LITTLEFS.begin(false))
   {
     ESP_LOGE(TAG, "LITTLEFS mount failed, did you upload file system image?");
 
-    hal.Halt(RGBLED::White);
+    //hal.Halt(RGBLED::White);
   }
   else
   {
@@ -3330,13 +3361,18 @@ void setup()
 
   mountSDCard();
 
+<<<<<<< HEAD
+  //Switch CAN chip TJA1051T/3 ON
+  //hal.CANBUSEnable(true);
+=======
   // Switch CAN chip TJA1051T/3 ON
   hal.CANBUSEnable(true);
+>>>>>>> 8b166ac4e93aa867cb3a07395ecddf2f87406948
 
-  hal.ConfigureCAN();
+  //hal.ConfigureCAN();
 
   hal.ConfigureVSPI();
-  init_tft_display();
+  //init_tft_display();
 
   // Pre configure the array
   memset(&cmi, 0, sizeof(cmi));
@@ -3392,8 +3428,8 @@ void setup()
   for (int8_t y = 0; y < RELAY_TOTAL; y++)
   {
     previousRelayState[y] = mysettings.rulerelaydefault[y];
-    // Set relay defaults
-    hal.SetOutputState(y, mysettings.rulerelaydefault[y]);
+    //Set relay defaults
+    //hal.SetOutputState(y, mysettings.rulerelaydefault[y]);
   }
   // Fire task to record state of outputs to SD Card
   xTaskNotify(sdcardlog_outputs_task_handle, 0x00, eNotifyAction::eNoAction);
@@ -3465,7 +3501,7 @@ void setup()
     // We have just started...
     SetControllerState(ControllerState::Stabilizing);
 
-    hal.TFTScreenBacklight(false);
+    //hal.TFTScreenBacklight(false);
 
     // Attempt connection in setup(), loop() will also try every 30 seconds
     connectToWifi();
